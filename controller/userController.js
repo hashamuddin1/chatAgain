@@ -1,5 +1,6 @@
 const { users } = require("../model/user");
 const { rooms } = require("../model/room");
+const { messages } = require("../model/message");
 
 const userLogin = async (req, res) => {
   try {
@@ -52,7 +53,11 @@ const joinRoom = async (req, res) => {
       users: [req.body.secondUserId, req.body.userId],
     });
     if (fetchRoom || fetchRoomAgain) {
-      return res.send({ message: "already exist" });
+      if (!fetchRoom) {
+        return res.send({ success: true, data: fetchRoomAgain });
+      } else if (!fetchRoomAgain) {
+        return res.send({ success: true, data: fetchRoom });
+      }
     }
 
     const createRoom = new rooms({
@@ -67,4 +72,22 @@ const joinRoom = async (req, res) => {
   }
 };
 
-module.exports = { userLogin, allUser, joinRoom };
+const sendMessage = async (req, res) => {
+  try {
+    const insertMessage = new messages({
+      sender: req.body.sender,
+      receiver: req.body.receiver,
+      roomId: req.body.roomId,
+      text: req.body.text
+    });
+
+    await insertMessage.save();
+
+    return res.send({ success: true, data: insertMessage });
+  } catch (e) {
+    console.log(e);
+    res.status(400).send(e);
+  }
+};
+
+module.exports = { userLogin, allUser, joinRoom, sendMessage };

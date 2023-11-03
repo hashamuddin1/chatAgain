@@ -28,21 +28,22 @@ io.on("connection", (socket) => {
   });
 
   socket.on("chat message", (msg) => {
-    console.log("message: " + msg);
     io.emit("chat message", msg);
   });
   socket.on("disconnect", () => {
-    io.emit("chat message", ` user Disonnected`);
+    io.emit("chat message", `User Disonnected`);
   });
 
   socket.on("startTyping", (msg) => {
-    console.log("startTyping: " + msg);
     io.emit("startTyping", msg);
   });
 
   socket.on("endTyping", (msg) => {
-    console.log("endTyping: " + msg);
     io.emit("endTyping", msg);
+  });
+
+  socket.on("joinRoom", async (roomId) => {
+    socket.join(roomId.toString());
   });
 });
 

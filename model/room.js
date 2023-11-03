@@ -9,14 +9,6 @@ const roomSchema = new mongoose.Schema(
         ref: "user",
       },
     ],
-
-    messages: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        required: false,
-        ref: "message",
-      },
-    ],
   },
   {
     timestamps: true,

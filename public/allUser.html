@@ -19,6 +19,8 @@
 
     <script>
       const url = "http://localhost:4500/api/v1/allUser";
+      var socket = io();
+      const connUserId = localStorage.getItem("userId");
       let responseData;
       fetch(url)
         .then((response) => {
@@ -29,11 +31,38 @@
         })
         .then((data) => {
           const result = document.getElementById("result");
-          data.data.forEach(({ userName }) => {
+          data.data.forEach(({ _id, userName }) => {
+            localStorage.removeItem("secondUserId");
+            localStorage.setItem("secondUserId", _id);
             const btn = document.createElement("button");
             btn.classList.add("btn");
             btn.classList.add("btn-secondary");
             btn.innerText = userName;
+
+            btn.addEventListener("click", () => {
+              fetch("http://localhost:4500/api/v1/joinRoom", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ userId: connUserId, secondUserId: _id }),
+              })
+                .then((res) => {
+                  res.json().then((data) => {
+                    if (data.success === true) {
+                      localStorage.removeItem("createRoomId");
+                      localStorage.setItem("createRoomId", data.data._id);
+                      socket.emit("joinRoom", data.data._id);
+                      window.location.href = "privateChat.html";
+                    } else {
+                      console.log("Error in joining the room");
+                    }
+                  });
+                })
+                .catch((error) => {
+                  console.log(error.message);
+                });
+            });
 
             result.appendChild(btn);
           });
