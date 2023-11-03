@@ -7,6 +7,7 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 require("./config/database");
 const userRouter = require("./router/userRoute");
+const { messages } = require("./model/message");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -44,8 +45,19 @@ io.on("connection", (socket) => {
 
   socket.on("joinRoom", async (roomId) => {
     socket.join(roomId.toString());
+    const allMessage = await extractMessageOfRoom(roomId.toString());
+    io.emit("allMessage", allMessage);
   });
 });
+
+async function extractMessageOfRoom(roomId) {
+  try {
+    const fetchMessage = await messages.find({ roomId: roomId });
+    return fetchMessage;
+  } catch (e) {
+    console.log(e);
+  }
+}
 
 server.listen(port, () => {
   console.log(`Server Listening On Port ${port}`);

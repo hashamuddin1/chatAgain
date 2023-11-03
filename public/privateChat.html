@@ -68,7 +68,7 @@
       }
     </style>
   </head>
-  <body>
+  <body onload="getAllMessage()">
     <div id="typing"></div>
     <ul id="messages"></ul>
     <form id="form" action="">
@@ -90,6 +90,20 @@
 
       var form = document.getElementById("form");
       var input = document.getElementById("input");
+
+      function getAllMessage() {
+        socket.emit("joinRoom", connCreateRoomId);
+        socket.on("allMessage", function (allMessage) {
+          const messages = document.getElementById("messages");
+          messages.innerHTML = ""
+          allMessage.forEach((message) => {
+            const name = document.createElement("li");
+            name.innerText = message.text;
+
+            messages.appendChild(name);
+          });
+        });
+      }
 
       form.addEventListener("submit", function (e) {
         e.preventDefault();
