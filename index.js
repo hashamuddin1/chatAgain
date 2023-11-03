@@ -46,7 +46,7 @@ io.on("connection", (socket) => {
   socket.on("joinRoom", async (roomId) => {
     socket.join(roomId.toString());
     const allMessage = await extractMessageOfRoom(roomId.toString());
-    io.emit("allMessage", allMessage);
+    io.in(roomId.toString()).emit("allMessage", allMessage);
   });
 });
 
