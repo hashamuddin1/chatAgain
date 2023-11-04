@@ -95,7 +95,7 @@
         socket.emit("joinRoom", connCreateRoomId);
         socket.on("allMessage", function (allMessage) {
           const messages = document.getElementById("messages");
-          messages.innerHTML = ""
+          messages.innerHTML = "";
           allMessage.forEach((message) => {
             const name = document.createElement("li");
             name.innerText = message.text;
@@ -104,6 +104,13 @@
           });
         });
       }
+
+      socket.on("receiveMessage", function (msg) {
+        const messages = document.getElementById("messages");
+        const name = document.createElement("li");
+        name.innerText = msg;
+        messages.appendChild(name);
+      });
 
       form.addEventListener("submit", function (e) {
         e.preventDefault();
@@ -123,6 +130,10 @@
             .then((res) => {
               res.json().then((data) => {
                 if (data.success === true) {
+                  socket.emit("sendMessage", {
+                    roomId: connCreateRoomId,
+                    text: input.value,
+                  });
                   input.value = "";
                 } else {
                   console.log("Error in sending message");

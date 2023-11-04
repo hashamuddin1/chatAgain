@@ -48,6 +48,10 @@ io.on("connection", (socket) => {
     const allMessage = await extractMessageOfRoom(roomId.toString());
     io.in(roomId.toString()).emit("allMessage", allMessage);
   });
+
+  socket.on("sendMessage", (data) => {
+    io.in(data.roomId.toString()).emit("receiveMessage", data.text);
+  });
 });
 
 async function extractMessageOfRoom(roomId) {
