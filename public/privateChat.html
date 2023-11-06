@@ -111,12 +111,10 @@
 
       socket.on("addAttachment", function (attachment) {
         var ulElement = document.getElementById("messages");
-        const linkEl = document.createElement("a")
-              linkEl.href = attachment;
-              linkEl.textContent = attachment
-              linkEl.target = "_blank"
-        // var imgElement = document.createElement("img");
-        // imgElement.src = attachment;
+        const linkEl = document.createElement("a");
+        linkEl.href = attachment;
+        linkEl.textContent = attachment;
+        linkEl.target = "_blank";
         var liElement = document.createElement("li");
         liElement.appendChild(linkEl);
         ulElement.appendChild(liElement);
@@ -129,13 +127,10 @@
           messages.innerHTML = "";
           allMessage.forEach((message) => {
             if (message.fileName !== null) {
-              const linkEl = document.createElement("a")
+              const linkEl = document.createElement("a");
               linkEl.href = `http://localhost:4500/upload/${message.fileName}`;
-              linkEl.textContent = message.fileName
-              linkEl.target = "_blank"
-
-              // var imgElement = document.createElement("img");
-              // imgElement.src = `http://localhost:4500/upload/${message.fileName}`;
+              linkEl.textContent = message.fileName;
+              linkEl.target = "_blank";
               var liElement = document.createElement("li");
               liElement.appendChild(linkEl);
               messages.appendChild(liElement);
