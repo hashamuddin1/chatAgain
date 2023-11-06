@@ -72,6 +72,8 @@
     <a href="allUser.html"
       ><button type="button" class="btn btn-secondary">Private Chat</button></a
     >
+    <h3>All Availible User</h3>
+    <div id="allUser"></div>
     <div id="typing"></div>
     <ul id="messages"></ul>
     <form id="form" action="">
@@ -95,6 +97,18 @@
         window.scrollTo(0, document.body.scrollHeight);
       });
 
+      socket.on("AllGroupUser", function (data) {
+        const allUser = document.getElementById("allUser");
+        allUser.innerHTML=""
+        data.forEach(({ userName }) => {
+          const btn = document.createElement("button");
+          btn.classList.add("btn");
+          btn.classList.add("btn-secondary");
+          btn.innerText = userName;
+          allUser.appendChild(btn);
+        });
+      });
+
       var form = document.getElementById("form");
       var input = document.getElementById("input");
 
@@ -104,6 +118,11 @@
           socket.emit("chat message", input.value);
           input.value = "";
         }
+      });
+
+      socket.on("disconnectUser", function (msg) {
+        console.log(msg)
+        socket.emit("userNameDisconnect", connUserName);
       });
 
       socket.on("chat message", function (msg) {

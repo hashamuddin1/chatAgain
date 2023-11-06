@@ -70,6 +70,7 @@
   </head>
   <body onload="getAllMessage()">
     <div id="typing"></div>
+    <input type="file" onchange="upload(this.files)" />
     <ul id="messages"></ul>
     <form id="form" action="">
       <input
@@ -90,6 +91,22 @@
 
       var form = document.getElementById("form");
       var input = document.getElementById("input");
+
+      function upload(files) {
+
+        socket.emit(
+          "upload",
+          {
+            fileData: files[0],
+            fileName: files[0].name,
+            fileType: files[0].type,
+          },
+          (status) => {
+            console.log("uploading file");
+            console.log("status: " + status);
+          }
+        );
+      }
 
       function getAllMessage() {
         socket.emit("joinRoom", connCreateRoomId);

@@ -8,9 +8,14 @@ const io = new Server(server);
 require("./config/database");
 const userRouter = require("./router/userRoute");
 const { messages } = require("./model/message");
+const { groupUsers } = require("./model/groupAvailibleUser");
+const { writeFile } = require("fs");
+const path = require("path");
+const filePath = path.join("./upload");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 
 app.use((_req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -19,19 +24,37 @@ app.use((_req, res, next) => {
   next();
 });
 
+
 app.use(express.static("public"));
+app.use("/upload", express.static(__dirname + "/upload"));
+
 app.use([userRouter]);
 
 io.on("connection", (socket) => {
-  socket.on("joinChat", (connUserName) => {
-    console.log(`${connUserName} Connected`);
+  socket.on("joinChat", async (connUserName) => {
+    await joinGroupChat(connUserName);
+    const allUser = await fetchAllGroupUser();
+    io.emit("AllGroupUser", allUser);
     io.emit("joinChat", `${connUserName} Connected`);
+  });
+
+  socket.on("upload", ({fileData, fileName, fileType}, callback) => {
+    writeFile(`${filePath}/${fileName}`, fileData, (err) => {
+      callback({ message: err ? "failure" : "success" });
+    });
+  });
+
+  socket.on("userNameDisconnect", async (connUserName) => {
+    await deleteGroupChat(connUserName);
+    const allUser = await fetchAllGroupUser();
+    io.emit("AllGroupUser", allUser);
   });
 
   socket.on("chat message", (msg) => {
     io.emit("chat message", msg);
   });
   socket.on("disconnect", () => {
+    io.emit("disconnectUser", `User Disonnected`);
     io.emit("chat message", `User Disonnected`);
   });
 
@@ -62,10 +85,38 @@ io.on("connection", (socket) => {
   });
 });
 
+async function deleteGroupChat(usernameUser) {
+  try {
+    await groupUsers.deleteOne({ userName: usernameUser });
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 async function extractMessageOfRoom(roomId) {
   try {
     const fetchMessage = await messages.find({ roomId: roomId });
     return fetchMessage;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+async function joinGroupChat(usernameUser) {
+  try {
+    const insertGroupUser = new groupUsers({
+      userName: usernameUser,
+    });
+    await insertGroupUser.save();
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+async function fetchAllGroupUser() {
+  try {
+    const fetchUser = await groupUsers.find();
+    return fetchUser;
   } catch (e) {
     console.log(e);
   }
