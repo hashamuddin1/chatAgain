@@ -147,16 +147,16 @@
       });
 
       function typeFunction() {
-        socket.emit("startTyping", `${connUserName} is Typing`);
-        socket.on("startTyping", function (msg) {
+        socket.emit("startTypingPrivate", `${connUserName} is Typing`);
+        socket.on("startTypingPrivate", function (msg) {
           var divElement = document.getElementById("typing");
           divElement.innerHTML = msg;
         });
       }
 
       function emptyFunction() {
-        socket.emit("endTyping", "");
-        socket.on("endTyping", function (msg) {
+        socket.emit("endTypingPrivate", "");
+        socket.on("endTypingPrivate", function (msg) {
           var divElement = document.getElementById("typing");
           divElement.innerHTML = msg;
         });

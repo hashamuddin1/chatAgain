@@ -43,6 +43,14 @@ io.on("connection", (socket) => {
     io.emit("endTyping", msg);
   });
 
+  socket.on("startTypingPrivate", (msg) => {
+    io.emit("startTypingPrivate", msg);
+  });
+
+  socket.on("endTypingPrivate", (msg) => {
+    io.emit("endTypingPrivate", msg);
+  });
+
   socket.on("joinRoom", async (roomId) => {
     socket.join(roomId.toString());
     const allMessage = await extractMessageOfRoom(roomId.toString());
