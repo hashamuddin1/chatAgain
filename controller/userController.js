@@ -78,7 +78,8 @@ const sendMessage = async (req, res) => {
       sender: req.body.sender,
       receiver: req.body.receiver,
       roomId: req.body.roomId,
-      text: req.body.text
+      text: req.body.text,
+      fileName: req.body.fileName,
     });
 
     await insertMessage.save();

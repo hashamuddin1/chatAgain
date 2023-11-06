@@ -16,14 +16,12 @@ const filePath = path.join("./upload");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
 app.use((_req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
 
   next();
 });
-
 
 app.use(express.static("public"));
 app.use("/upload", express.static(__dirname + "/upload"));
@@ -38,11 +36,34 @@ io.on("connection", (socket) => {
     io.emit("joinChat", `${connUserName} Connected`);
   });
 
-  socket.on("upload", ({fileData, fileName, fileType}, callback) => {
-    writeFile(`${filePath}/${fileName}`, fileData, (err) => {
-      callback({ message: err ? "failure" : "success" });
-    });
-  });
+  socket.on(
+    "upload",
+    (
+      { fileData, fileName, roomId, connUserId, connSecondUserId },
+      callback
+    ) => {
+      writeFile(`${filePath}/${fileName}`, fileData, (err) => {
+        callback({ message: err ? "failure" : "success" });
+      });
+      io.in(roomId.toString()).emit(
+        "addAttachment",
+        `http://localhost:4500/upload/${fileName}`
+      );
+
+      fetch("http://localhost:4500/api/v1/sendMessage", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sender: connUserId,
+          receiver: connSecondUserId,
+          roomId: roomId.toString(),
+          fileName: fileName,
+        }),
+      });
+    }
+  );
 
   socket.on("userNameDisconnect", async (connUserName) => {
     await deleteGroupChat(connUserName);

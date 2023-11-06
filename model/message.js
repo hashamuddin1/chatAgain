@@ -19,11 +19,15 @@ const messageSchema = new mongoose.Schema(
       required: true,
       ref: "user",
     },
-
     text: {
       type: String,
       required: false,
-      trim: true,
+      default: null,
+    },
+    fileName: {
+      type: String,
+      required: false,
+      default: null,
     },
   },
   {

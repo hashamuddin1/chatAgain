@@ -93,13 +93,14 @@
       var input = document.getElementById("input");
 
       function upload(files) {
-
         socket.emit(
           "upload",
           {
             fileData: files[0],
             fileName: files[0].name,
-            fileType: files[0].type,
+            roomId: connCreateRoomId,
+            connUserId,
+            connSecondUserId,
           },
           (status) => {
             console.log("uploading file");
@@ -108,12 +109,28 @@
         );
       }
 
+      socket.on("addAttachment", function (attachment) {
+        var ulElement = document.getElementById("messages");
+        var imgElement = document.createElement("img");
+        imgElement.src = attachment;
+        var liElement = document.createElement("li");
+        liElement.appendChild(imgElement);
+        ulElement.appendChild(liElement);
+      });
+
       function getAllMessage() {
         socket.emit("joinRoom", connCreateRoomId);
         socket.on("allMessage", function (allMessage) {
           const messages = document.getElementById("messages");
           messages.innerHTML = "";
           allMessage.forEach((message) => {
+            if (message.fileName !== null) {
+              var imgElement = document.createElement("img");
+              imgElement.src = `http://localhost:4500/upload/${message.fileName}`;
+              var liElement = document.createElement("li");
+              liElement.appendChild(imgElement);
+              messages.appendChild(liElement);
+            }
             const name = document.createElement("li");
             name.innerText = message.text;
 
