@@ -111,10 +111,14 @@
 
       socket.on("addAttachment", function (attachment) {
         var ulElement = document.getElementById("messages");
-        var imgElement = document.createElement("img");
-        imgElement.src = attachment;
+        const linkEl = document.createElement("a")
+              linkEl.href = attachment;
+              linkEl.textContent = attachment
+              linkEl.target = "_blank"
+        // var imgElement = document.createElement("img");
+        // imgElement.src = attachment;
         var liElement = document.createElement("li");
-        liElement.appendChild(imgElement);
+        liElement.appendChild(linkEl);
         ulElement.appendChild(liElement);
       });
 
@@ -125,10 +129,15 @@
           messages.innerHTML = "";
           allMessage.forEach((message) => {
             if (message.fileName !== null) {
-              var imgElement = document.createElement("img");
-              imgElement.src = `http://localhost:4500/upload/${message.fileName}`;
+              const linkEl = document.createElement("a")
+              linkEl.href = `http://localhost:4500/upload/${message.fileName}`;
+              linkEl.textContent = message.fileName
+              linkEl.target = "_blank"
+
+              // var imgElement = document.createElement("img");
+              // imgElement.src = `http://localhost:4500/upload/${message.fileName}`;
               var liElement = document.createElement("li");
-              liElement.appendChild(imgElement);
+              liElement.appendChild(linkEl);
               messages.appendChild(liElement);
             }
             const name = document.createElement("li");

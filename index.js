@@ -4,7 +4,9 @@ const http = require("http");
 const server = http.createServer(app);
 const port = 4500;
 const { Server } = require("socket.io");
-const io = new Server(server);
+const io = new Server(server, {
+  maxHttpBufferSize: 1e8
+});
 require("./config/database");
 const userRouter = require("./router/userRoute");
 const { messages } = require("./model/message");
